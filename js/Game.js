@@ -42,64 +42,61 @@
          
          let guess;
          qwerty.addEventListener('click', (e) => {
+            // determine that a button has been clicked
             if(e.target.tagName === "BUTTON") {
                guess = e.target;
 
-               // console.log(this.activePhrase)
+               // call checkLetter method and pass it e.target
                this.activePhrase.checkLetter(guess);
             }
          })
 
-
-         //disable selected letter onscreen keyboard button
-         
-         //if does not include guessed letter:
-         // add wrong class to selected keyboard letter and call removeLife()
-         
-         //if phrase contains selected letter, call showMatchedLetter() and call checkForWin()
-         // if won, call gameOver()
      }
 
      removeLife() {
+        // create an array of the heart images
         let lives = document.querySelectorAll('.tries');
 
+        // change the first one in the array to a lost heart
          lives[0].firstChild.src = "images/lostHeart.png"
+         // remove the class tries so that this heart won't be part of the lives array next time this method is called
          lives[0].className = "";
 
+      // take away a life from the missed property
         this.missed -= 1;
-        console.log(this.missed)
+        // if there are zero lives, end the game.
         if(this.missed === 0) {
            this.gameOver();
         }
 
-
-        // replace liveHeart with lostHeart image
-        //increment missed property
-        // five missed guesses, then call gameOver()
      }
      checkForWin(){
         //checking to see if revealed all letters.
 
-        //loop over all letters
-        // save the ones that have content other than an empty space
-        // if the class on all of them is equal to show, you win?
+       
+        
 
          let characters = document.querySelectorAll('.letter');
          let letters = [];
-         let gameWon = false;
 
+          // loop over all characters and save the ones that are letters - their content isn't an empty space
          characters.forEach( (item) => {
             if(item.innerHTML !== ' ') {
                letters.push(item);
             }
          })
+
+         //loop over all letters
          let revealedLetters = 0;
          letters.forEach((item) => {
             if(item.className.includes('show')) {
+               // saving all the shown letters 
                revealedLetters += 1;
             }
          })
 
+         
+        // if the class on all of them is equal to show, you win?
          if (revealedLetters === letters.length) {
             gameWon = true;
 
@@ -109,13 +106,12 @@
             overlay.className = "win";
             // update overlay css class to win.
             document.querySelector('#game-over-message').innerHTML = "WINNER WINNER, TOFU DINNER!";
-            this.resetGame();
+
          }
 
 
      }
      gameOver(){
-      this.resetGame();
       
         //display original start screen
         overlay.style.display = "block";
@@ -124,15 +120,17 @@
       // update overlay css class to lose.
         document.querySelector('#game-over-message').innerHTML = "You Lose!";  
         
-        
+      // call reset game method
+      this.resetGame();
      }
      resetGame() {
-        // remove lis
+        // remove lis - so no phrase displayed
         document.querySelector('#phrase ul').innerHTML = '';
 
         // enables all keyboard keys
          const keys = document.querySelectorAll('.key')
          
+         // loop and undisable and reset classname
          keys.forEach((item) => {
             item.className = "key";
             item.disabled = false;
@@ -141,7 +139,6 @@
         // reset heart images
         this.missed = 5;
         const hearts = document.querySelectorAll('#scoreboard ol li');
-        console.log(hearts);
         hearts.forEach(item => {
            item.className = "tries";
            item.firstChild.src = "images/liveHeart.png"
