@@ -27,28 +27,14 @@
     }
     checkLetter(guess){
 
-        // disable the button that was pressed whether or not letter matches
-        guess.disabled = true;
+        // check if the phrase includes the letter
+        if(this.phrase.includes(guess.innerHTML)) {
+            return true;
+        } else {
+            return false;
+        }
 
-                // check if the phrase includes the letter
-               if(this.phrase.includes(guess.innerHTML)) {
-
-                // if it does, change the class of letter chosen, and search for all instances of that letter in the phrase
-                  guess.className += " chosen";
-                  let lettersToReveal = document.querySelectorAll(`.${guess.innerHTML}`);
-
-                // call showMatchedLetter method, passing it the array of letters to reveal
-                  this.showMatchedLetter(lettersToReveal);
-
-                  // check for win
-                  game.checkForWin();
-
-               } else { 
-                   // turn key orange
-                   guess.className += " wrong";
-                   // remove a life                   
-                   game.removeLife();
-               }
+               
     }
     showMatchedLetter(letters){
         // loop over array of letters to reveal and update classname to reveal them.

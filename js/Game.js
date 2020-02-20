@@ -6,7 +6,7 @@
 
  class Game {
      constructor() {
-        this.missed = 5;
+        this.missed = 0;
         this.phrases = [
          new Phrase ('ich spreche kein deutsh'),
          new Phrase ('ich liebe hier'),
@@ -22,34 +22,42 @@
       const overlay = document.querySelector('#overlay');
       overlay.style.display = "none";  
       
-      // call getRandomPhrase
+      // set result of getRandomPhrase to the active phrase
+      this.activePhrase = this.getRandomPhrase();
 
-      this.getRandomPhrase().addPhraseToDisplay();
-      
-      // phrase.prototype.addPhrasetoDisplay();
-      this.handleInteraction();
+      // then put it on the display
+      this.activePhrase.addPhraseToDisplay();
 
      };
      getRandomPhrase() {
         // retrieve a phrase from this.phrases randomly
          let index = Math.floor(Math.random()  * this.phrases.length);
-         this.activePhrase = this.phrases[index];
-         return this.activePhrase;
+         return this.phrases[index];
      };
-     handleInteraction() {
-         //check to see if button matches letter in phrase
-         const qwerty = document.querySelector('#qwerty');
-         
-         let guess;
-         qwerty.addEventListener('click', (e) => {
-            // determine that a button has been clicked
-            if(e.target.tagName === "BUTTON") {
-               guess = e.target;
+     handleInteraction(guess) {         
+         // disable the button that was pressed whether or not letter matches
+         guess.disabled = true;
 
-               // call checkLetter method and pass it e.target
-               this.activePhrase.checkLetter(guess);
-            }
-         })
+          // check if the phrase includes the letter
+          if(this.activePhrase.checkLetter(guess)) {
+
+            // if it does, change the class of letter chosen, and search for all instances of that letter in the phrase
+              guess.className += " chosen";
+              let lettersToReveal = document.querySelectorAll(`.${guess.innerHTML}`);
+
+            // call showMatchedLetter method, passing it the array of letters to reveal
+              this.activePhrase.showMatchedLetter(lettersToReveal);
+
+              // check for win
+              this.checkForWin();
+
+           } else { 
+               // turn key orange
+               guess.className += " wrong";
+               // remove a life                   
+               this.removeLife();
+           }
+         
 
      }
 
@@ -63,19 +71,15 @@
          lives[0].className = "";
 
       // take away a life from the missed property
-        this.missed -= 1;
+        this.missed += 1;
         // if there are zero lives, end the game.
-        if(this.missed === 0) {
-           this.gameOver();
+        if(this.missed === 5) {
+           this.gameOver(false);
         }
 
      }
      checkForWin(){
         //checking to see if revealed all letters.
-
-       
-        
-
          let characters = document.querySelectorAll('.letter');
          let letters = [];
 
@@ -95,30 +99,33 @@
             }
          })
 
-         
-        // if the class on all of them is equal to show, you win?
+         // if the class on all of them is equal to show, you win?
          if (revealedLetters === letters.length) {
-            gameWon = true;
-
-            //display original start screen
-            overlay.style.display = "block";
-            // update overlay to say win
-            overlay.className = "win";
-            // update overlay css class to win.
-            document.querySelector('#game-over-message').innerHTML = "WINNER WINNER, TOFU DINNER!";
-
+            this.gameOver(true);
          }
 
 
      }
-     gameOver(){
+     gameOver(result){
+
+      //display original start screen
+      overlay.style.display = "block";
       
-        //display original start screen
-        overlay.style.display = "block";
-        // update overlay to say lose
-        overlay.className = "lose";
-      // update overlay css class to lose.
-        document.querySelector('#game-over-message').innerHTML = "You Lose!";  
+      if(result) {
+         // update overlay to say win
+         overlay.className = "win";
+         // update overlay css class to win.
+         document.querySelector('#game-over-message').innerHTML = "WINNER WINNER, TOFU DINNER!";
+
+      } else {
+            // update overlay to say lose
+            overlay.className = "lose";
+            // update overlay css class to lose.
+            document.querySelector('#game-over-message').innerHTML = "You Lose!";  
+      }
+      
+        
+     
         
       // call reset game method
       this.resetGame();
